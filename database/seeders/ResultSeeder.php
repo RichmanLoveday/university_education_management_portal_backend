@@ -2,61 +2,64 @@
 
 namespace Database\Seeders;
 
-use App\Models\CourseRegistration;
+use App\Models\CourseAllocation;
 use App\Models\Result;
-use App\Models\Lecturer;
+use App\Models\User;
+use App\Services\Result\GradingService;
+use App\Services\Result\ResultAuditService;
 use Illuminate\Database\Seeder;
 
 class ResultSeeder extends Seeder
 {
+    // Fixed demo scores [ca, exam] per matric number and course
+    private const SCORES = [
+        'CSC/2023/001' => ['CSC 201' => [26, 52], 'CSC 202' => [24, 45], 'CSC 301' => [27, 48], 'CSC 302' => [22, 41]],
+        'CSC/2023/008' => ['CSC 201' => [18, 38], 'CSC 202' => [20, 44], 'CSC 301' => [15, 30], 'CSC 302' => [25, 50]],
+    ];
+
     public function run(): void
     {
-        $lecturer = Lecturer::where('staff_id', 'STAFF/CSC/001')->first();
-        $registrations = CourseRegistration::with('course')->get();
+        $grading  = app(GradingService::class);
+        $audit    = app(ResultAuditService::class);
+        $approver = User::where('email', 'deptadmin.cs@uemp.test')->first();
 
-        foreach ($registrations as $index => $registration) {
-            $ca = rand(15, 30);
-            $exam = rand(30, 60);
-            $total = $ca + $exam;
+        // Previous session + CSC 301 are approved; CSC 302 is waiting for departmental approval
+        $workflow = ['CSC 201' => 'approved', 'CSC 202' => 'approved', 'CSC 301' => 'approved', 'CSC 302' => 'submitted'];
 
-            $grade = match(true) {
-                $total >= 70 => 'A',
-                $total >= 60 => 'B',
-                $total >= 50 => 'C',
-                $total >= 45 => 'D',
-                $total >= 40 => 'E',
-                default => 'F',
-            };
+        $allocations = CourseAllocation::with(['course', 'lecturer.user'])->get();
 
-            $gradePoint = match($grade) {
-                'A' => 5.00,
-                'B' => 4.00,
-                'C' => 3.00,
-                'D' => 2.00,
-                'E' => 1.00,
-                default => 0.00,
-            };
+        foreach ($allocations as $allocation) {
+            $status = $workflow[$allocation->course->code] ?? null;
 
-            // Vary the status for demo purposes
-            $status = match($index % 4) {
-                0 => 'approved',
-                1 => 'submitted',
-                2 => 'draft',
-                3 => 'rejected',
-            };
+            if (!$status) {
+                continue;
+            }
 
-            Result::create([
-                'course_registration_id' => $registration->id,
-                'ca_score'               => $ca,
-                'exam_score'             => $exam,
-                'total_score'            => $total,
-                'grade'                  => $grade,
-                'grade_point'            => $gradePoint,
-                'status'                 => $status,
-                'lecturer_id'            => $lecturer->id,
-                'submitted_at'           => in_array($status, ['submitted', 'approved', 'rejected']) ? now() : null,
-                'rejection_reason'       => $status === 'rejected' ? 'Incomplete continuous assessment records' : null,
-            ]);
+            $registrations = $allocation->registrationsQuery()->with('student')->get();
+
+            foreach ($registrations as $registration) {
+                [$ca, $exam] = self::SCORES[$registration->student->matric_number][$allocation->course->code];
+
+                $result = Result::create([
+                    'course_registration_id' => $registration->id,
+                    'ca_score'               => $ca,
+                    'exam_score'             => $exam,
+                    ...$grading->compute($ca, $exam),
+                    'status'                 => 'draft',
+                    'lecturer_id'            => $allocation->lecturer_id,
+                ]);
+                $audit->log($result, 'created', $allocation->lecturer->user);
+
+                $old = $audit->snapshot($result);
+                $result->update(['status' => 'submitted', 'submitted_at' => now()]);
+                $audit->log($result, 'submitted', $allocation->lecturer->user, $old);
+
+                if ($status === 'approved') {
+                    $old = $audit->snapshot($result);
+                    $result->update(['status' => 'approved', 'approved_by' => $approver->id, 'approved_at' => now()]);
+                    $audit->log($result, 'approved', $approver, $old, 'Seeded approval');
+                }
+            }
         }
     }
 }

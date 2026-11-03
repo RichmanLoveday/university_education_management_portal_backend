@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Models\Lecturer;
 use App\Models\Department;
 use App\Models\Program;
+use App\Models\DepartmentAdmin;
 use App\Models\AcademicSession;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -18,6 +19,7 @@ class UserSeeder extends Seeder
         $cscDept = Department::where('code', 'CSC')->first();
         $senDept = Department::where('code', 'SEN')->first();
         $cscProgram = Program::where('code', 'BSC-CSC')->first();
+        $senProgram = Program::where('code', 'BENG-SEN')->first();
         $currentSession = AcademicSession::where('is_current', true)->first();
 
         // 1. Super Admin
@@ -36,6 +38,11 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password'),
             'role'     => 'department_admin',
             'is_active'=> true,
+        ]);
+
+        DepartmentAdmin::create([
+            'user_id'       => $deptAdmin->id,
+            'department_id' => $cscDept->id,
         ]);
 
         // 3. Lecturers
@@ -125,6 +132,56 @@ class UserSeeder extends Seeder
             'matric_number'     => 'CSC/2023/008',
             'department_id'      => $cscDept->id,
             'program_id'         => $cscProgram->id,
+            'academic_level'     => 300,
+            'entry_year'         => 2023,
+            'current_session_id' => $currentSession->id,
+            'status'             => 'active',
+        ]);
+
+        // 5. Software Engineering department (to show department isolation)
+        $senAdmin = User::create([
+            'name'     => 'Engr. Kemi Balogun',
+            'email'    => 'deptadmin.sen@uemp.test',
+            'password' => Hash::make('password'),
+            'role'     => 'department_admin',
+            'is_active'=> true,
+        ]);
+
+        DepartmentAdmin::create([
+            'user_id'       => $senAdmin->id,
+            'department_id' => $senDept->id,
+        ]);
+
+        $senLecturerUser = User::create([
+            'name'     => 'Dr. Tunde Bakare',
+            'email'    => 'lecturer3@uemp.test',
+            'password' => Hash::make('password'),
+            'role'     => 'lecturer',
+            'is_active'=> true,
+        ]);
+
+        Lecturer::create([
+            'user_id'       => $senLecturerUser->id,
+            'staff_id'      => 'STAFF/SEN/001',
+            'department_id' => $senDept->id,
+            'title'         => 'Dr',
+            'rank'          => 'Lecturer I',
+            'is_active'     => true,
+        ]);
+
+        $senStudentUser = User::create([
+            'name'     => 'Grace Udoh',
+            'email'    => 'student4@uemp.test',
+            'password' => Hash::make('password'),
+            'role'     => 'student',
+            'is_active'=> true,
+        ]);
+
+        Student::create([
+            'user_id'            => $senStudentUser->id,
+            'matric_number'      => 'SEN/2023/004',
+            'department_id'      => $senDept->id,
+            'program_id'         => $senProgram->id,
             'academic_level'     => 300,
             'entry_year'         => 2023,
             'current_session_id' => $currentSession->id,
