@@ -66,7 +66,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
 
         // User Management
-        Route::apiResource('users', SuperAdmin\UserController::class);
+        Route::apiResource('users', SuperAdmin\UserController::class)->except('destroy');
         Route::patch('users/{user}/status', [SuperAdmin\UserController::class, 'updateStatus']);
         Route::patch('users/{user}/role', [SuperAdmin\UserController::class, 'updateRole']);
     });

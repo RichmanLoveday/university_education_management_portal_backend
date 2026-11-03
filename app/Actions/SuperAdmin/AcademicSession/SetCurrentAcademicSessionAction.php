@@ -11,7 +11,8 @@ class SetCurrentAcademicSessionAction
     {
         // Use a database transaction to ensure atomicity when setting the current academic session
        return DB::transaction(function () use ($academicSession) {
-            AcademicSession::where('is_current', true)->update(['is_current' => false]);
+            // Skip this session itself, otherwise re-setting the current session leaves none current
+            AcademicSession::where('is_current', true)->where('id', '!=', $academicSession->id)->update(['is_current' => false]);
 
             $academicSession->update(['is_current' => true]);
 
