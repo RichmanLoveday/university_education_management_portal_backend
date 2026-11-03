@@ -61,7 +61,9 @@ caches config/routes/views, runs `migrate --force`, and seeds the demo data once
    | `CACHE_STORE` | `database` |
 
    Optional: `RUN_MIGRATIONS=false` skips migrations on start, `SEED_IF_EMPTY=false` skips the demo seed.
-4. **Settings → Networking → Generate Domain**. The health check hits `/up`.
+4. **Settings → Networking → Generate Domain**, then redeploy so `APP_URL` picks it up. The health check hits `/up`.
+   If `APP_URL` has no valid host, the container falls back to the Railway domain (or `http://localhost`)
+   instead of crashing.
 
 To reset the live demo data, run `php artisan migrate:fresh --seed --force` from the service shell
 (`railway ssh` or the dashboard).

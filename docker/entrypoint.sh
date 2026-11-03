@@ -11,6 +11,16 @@ rm -f /etc/apache2/mods-enabled/mpm_event.* /etc/apache2/mods-enabled/mpm_worker
 sed -ri "s/^Listen .*/Listen ${PORT}/" /etc/apache2/ports.conf
 sed -ri "s/<VirtualHost \*:[0-9]+>/<VirtualHost *:${PORT}>/" /etc/apache2/sites-available/000-default.conf
 
+# An APP_URL without a host (e.g. "https://" before a Railway domain exists) breaks every artisan command
+if ! php -r 'exit(filter_var(parse_url(getenv("APP_URL") ?: "", PHP_URL_HOST), FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) ? 0 : 1);'; then
+    if [ -n "$RAILWAY_PUBLIC_DOMAIN" ]; then
+        export APP_URL="https://${RAILWAY_PUBLIC_DOMAIN}"
+    else
+        export APP_URL="http://localhost"
+    fi
+    echo "APP_URL was missing or invalid, using ${APP_URL}"
+fi
+
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
