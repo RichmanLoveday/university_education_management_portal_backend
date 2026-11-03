@@ -22,11 +22,14 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     // SUPER ADMIN ROUTES
     Route::middleware('role:super_admin')->prefix('super-admin')->name('super-admin.')->group(function () {
+        Route::get('dashboard', [SuperAdmin\DashboardController::class, 'index']);
+
         // Faculty Management
         Route::apiResource('faculties', SuperAdmin\FacultyController::class);
 
         // Department Management
         Route::apiResource('departments', SuperAdmin\DepartmentController::class);
+        Route::apiResource('department-admins', SuperAdmin\DepartmentAdminController::class);
 
         // Programs
         Route::apiResource('programs', SuperAdmin\ProgramController::class);
@@ -45,6 +48,22 @@ Route::middleware('auth:sanctum')->group(function () {
         // Courses & allocations
         Route::apiResource('courses', SuperAdmin\CourseController::class);
         Route::apiResource('course-allocations', SuperAdmin\CourseAllocationController::class);
+
+        // Grading scale (configurable)
+        Route::apiResource('grading-scales', SuperAdmin\GradingScaleController::class);
+
+        // Monitoring (read-only)
+        Route::get('course-registrations', [SuperAdmin\OversightController::class, 'courseRegistrations']);
+        Route::get('results', [SuperAdmin\OversightController::class, 'results']);
+        Route::get('results/{result}', [SuperAdmin\OversightController::class, 'showResult']);
+        Route::get('audit-logs', [SuperAdmin\OversightController::class, 'auditLogs']);
+
+        // Reports
+        Route::prefix('reports')->group(function () {
+            Route::get('students', [SuperAdmin\ReportController::class, 'students']);
+            Route::get('course-registrations', [SuperAdmin\ReportController::class, 'courseRegistrations']);
+            Route::get('academic-performance', [SuperAdmin\ReportController::class, 'academicPerformance']);
+        });
 
         // User Management
         Route::apiResource('users', SuperAdmin\UserController::class);
