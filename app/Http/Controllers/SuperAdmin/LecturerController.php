@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 
 class LecturerController extends Controller
 {
-    /** Retrieve the lecturer listing. */
     public function index(Request $request, ListLecturersAction $action): JsonResponse
     {
         return response()->json([
@@ -25,7 +24,6 @@ class LecturerController extends Controller
         ]);
     }
 
-    /** Create a lecturer from the validated request data. */
     public function store(StoreLecturerRequest $request, CreateLecturerAction $action): JsonResponse
     {
         $lecturer = $action->execute($request->validated());
@@ -36,7 +34,6 @@ class LecturerController extends Controller
         ], 201);
     }
 
-    /** Retrieve the specified lecturer. */
     public function show(Lecturer $lecturer, ShowLecturerAction $action): JsonResponse
     {
         return response()->json([
@@ -45,7 +42,6 @@ class LecturerController extends Controller
         ]);
     }
 
-    /** Update the specified lecturer with validated request data. */
     public function update(UpdateLecturerRequest $request, Lecturer $lecturer, UpdateLecturerAction $action): JsonResponse
     {
         return response()->json([
@@ -54,7 +50,6 @@ class LecturerController extends Controller
         ]);
     }
 
-    /** Delete the specified lecturer. */
     public function destroy(Lecturer $lecturer, DeleteLecturerAction $action): JsonResponse
     {
         $action->execute($lecturer);

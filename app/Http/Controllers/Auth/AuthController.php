@@ -18,8 +18,6 @@ class AuthController extends Controller
     {
         $result = $this->authService->login($request->validated());
 
-        // dd($result);
-
         return response()->json([
             'message' => 'Login successful',
             'token'   => $result['token'],

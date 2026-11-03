@@ -12,8 +12,8 @@ class ListUsersAction
         // Build a query to list users based on the provided filters in the request
         return User::query()
             ->when($request->search, function ($q, $search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                $q->where(fn($q) => $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%"));
             })
             ->when($request->role, fn($q) => $q->where('role', $request->role))
             ->when($request->has('is_active'), function ($q) use ($request) {

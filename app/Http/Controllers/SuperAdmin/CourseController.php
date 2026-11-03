@@ -16,13 +16,6 @@ use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-    /*
-     * Display a listing of the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Actions\SuperAdmin\Course\ListCoursesAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function index(Request $request, ListCoursesAction $action): JsonResponse
     {
         return response()->json([
@@ -31,13 +24,6 @@ class CourseController extends Controller
         ]);
     }
 
-    /*
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\SuperAdmin\Course\StoreCourseRequest  $request
-     * @param  \App\Actions\SuperAdmin\Course\CreateCourseAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(StoreCourseRequest $request, CreateCourseAction $action): JsonResponse
     {
         $course = $action->execute($request->validated());
@@ -48,13 +34,6 @@ class CourseController extends Controller
         ], 201);
     }
 
-    /*
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Course  $course
-     * @param  \App\Actions\SuperAdmin\Course\ShowCourseAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show(Course $course, ShowCourseAction $action): JsonResponse
     {
         return response()->json([
@@ -63,14 +42,6 @@ class CourseController extends Controller
         ]);
     }
 
-    /*
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\SuperAdmin\Course\UpdateCourseRequest  $request
-     * @param  \App\Models\Course  $course
-     * @param  \App\Actions\SuperAdmin\Course\UpdateCourseAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(UpdateCourseRequest $request, Course $course, UpdateCourseAction $action): JsonResponse
     {
         return response()->json([
@@ -79,13 +50,6 @@ class CourseController extends Controller
         ]);
     }
 
-    /*
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Course  $course
-     * @param  \App\Actions\SuperAdmin\Course\DeleteCourseAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function destroy(Course $course, DeleteCourseAction $action): JsonResponse
     {
         $action->execute($course);

@@ -16,13 +16,6 @@ use Illuminate\Http\Request;
 
 class ProgramController extends Controller
 {
-    /*
-     * Display a listing of the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Actions\SuperAdmin\Program\ListProgramsAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function index(Request $request, ListProgramsAction $action): JsonResponse
     {
         return response()->json([
@@ -31,13 +24,6 @@ class ProgramController extends Controller
         ]);
     }
 
-    /*
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\SuperAdmin\Program\StoreProgramRequest  $request
-     * @param  \App\Actions\SuperAdmin\Program\CreateProgramAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(StoreProgramRequest $request, CreateProgramAction $action): JsonResponse
     {
         $program = $action->execute($request->validated());
@@ -48,13 +34,6 @@ class ProgramController extends Controller
         ], 201);
     }
 
-    /*
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Program  $program
-     * @param  \App\Actions\SuperAdmin\Program\ShowProgramAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show(Program $program, ShowProgramAction $action): JsonResponse
     {
         return response()->json([
@@ -63,14 +42,6 @@ class ProgramController extends Controller
         ]);
     }
 
-    /*
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\SuperAdmin\Program\UpdateProgramRequest  $request
-     * @param  \App\Models\Program  $program
-     * @param  \App\Actions\SuperAdmin\Program\UpdateProgramAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(UpdateProgramRequest $request, Program $program, UpdateProgramAction $action): JsonResponse
     {
         return response()->json([
@@ -79,13 +50,6 @@ class ProgramController extends Controller
         ]);
     }
 
-    /*
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Program  $program
-     * @param  \App\Actions\SuperAdmin\Program\DeleteProgramAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function destroy(Program $program, DeleteProgramAction $action): JsonResponse
     {
         $action->execute($program);

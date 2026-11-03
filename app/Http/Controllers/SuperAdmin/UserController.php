@@ -19,13 +19,6 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    /*
-     * Display a listing of the users.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Actions\SuperAdmin\User\ListUsersAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function index(Request $request, ListUsersAction $action): JsonResponse
     {
         return response()->json([
@@ -34,13 +27,6 @@ class UserController extends Controller
         ]);
     }
 
-    /*
-     * Store a newly created user in storage.
-     *
-     * @param  \App\Http\Requests\SuperAdmin\User\StoreUserRequest  $request
-     * @param  \App\Actions\SuperAdmin\User\CreateUserAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(StoreUserRequest $request, CreateUserAction $action): JsonResponse
     {
         $user = $action->execute($request->validated());
@@ -51,13 +37,6 @@ class UserController extends Controller
         ], 201);
     }
 
-    /*
-     * Display the specified user.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Actions\SuperAdmin\User\ShowUserAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show(User $user, ShowUserAction $action): JsonResponse
     {
         return response()->json([
@@ -66,14 +45,6 @@ class UserController extends Controller
         ]);
     }
 
-    /*
-     * Update the specified user in storage.
-     *
-     * @param  \App\Http\Requests\SuperAdmin\User\UpdateUserRequest  $request
-     * @param  \App\Models\User  $user
-     * @param  \App\Actions\SuperAdmin\User\UpdateUserAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(UpdateUserRequest $request, User $user, UpdateUserAction $action): JsonResponse
     {
         return response()->json([
@@ -82,14 +53,6 @@ class UserController extends Controller
         ]);
     }
 
-    /*
-     * Update the specified user's status in storage.
-     *
-     * @param  \App\Http\Requests\SuperAdmin\User\UpdateUserStatusRequest  $request
-     * @param  \App\Models\User  $user
-     * @param  \App\Actions\SuperAdmin\User\UpdateUserStatusAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function updateStatus(UpdateUserStatusRequest $request, User $user, UpdateUserStatusAction $action): JsonResponse
     {
         $user = $action->execute($user, $request->boolean('is_active'));
@@ -100,14 +63,6 @@ class UserController extends Controller
         ]);
     }
 
-    /*
-     * Update the specified user's role in storage.
-     *
-     * @param  \App\Http\Requests\SuperAdmin\User\UpdateUserRoleRequest  $request
-     * @param  \App\Models\User  $user
-     * @param  \App\Actions\SuperAdmin\User\UpdateUserRoleAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function updateRole(UpdateUserRoleRequest $request, User $user, UpdateUserRoleAction $action): JsonResponse
     {
         $user = $action->execute($user, $request->validated('role'));

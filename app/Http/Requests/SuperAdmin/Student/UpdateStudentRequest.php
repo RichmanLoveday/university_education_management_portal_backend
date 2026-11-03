@@ -4,7 +4,6 @@ namespace App\Http\Requests\SuperAdmin\Student;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 
 class UpdateStudentRequest extends FormRequest
 {
@@ -18,10 +17,6 @@ class UpdateStudentRequest extends FormRequest
         $student = $this->route('student');
 
         return [
-            'name'             => ['sometimes', 'required', 'string', 'max:255'],
-            'email'            => ['sometimes', 'required', 'email', Rule::unique('users', 'email')->ignore($student->user_id)],
-            'password'         => ['sometimes', 'nullable', 'string', Password::min(8)],
-
             'matric_number'   => ['sometimes', 'required', 'string', 'max:50', Rule::unique('students')->ignore($student->id)],
             'department_id'    => ['sometimes', 'required', 'exists:departments,id'],
             'program_id'       => ['sometimes', 'required', 'exists:programs,id'],

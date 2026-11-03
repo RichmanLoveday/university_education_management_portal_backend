@@ -13,11 +13,13 @@ class ListStudentsAction
         return Student::query()
             ->with(['user:id,name,email,is_active', 'department:id,name,code', 'program:id,name,code'])
             ->when($request->search, function ($q, $search) {
-                $q->where('matric_number', 'like', "%{$search}%")
-                  ->orWhereHas('user', function ($q2) use ($search) {
-                      $q2->where('name', 'like', "%{$search}%")
-                         ->orWhere('email', 'like', "%{$search}%");
-                  });
+                $q->where(function ($q) use ($search) {
+                    $q->where('matric_number', 'like', "%{$search}%")
+                      ->orWhereHas('user', function ($q2) use ($search) {
+                          $q2->where('name', 'like', "%{$search}%")
+                             ->orWhere('email', 'like', "%{$search}%");
+                      });
+                });
             })
             ->when($request->department_id, fn($q) => $q->where('department_id', $request->department_id))
             ->when($request->program_id, fn($q) => $q->where('program_id', $request->program_id))

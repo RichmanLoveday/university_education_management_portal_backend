@@ -16,13 +16,6 @@ use Illuminate\Http\Request;
 
 class CourseAllocationController extends Controller
 {
-    /*
-     * Display a listing of the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Actions\SuperAdmin\CourseAllocation\ListCourseAllocationsAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function index(Request $request, ListCourseAllocationsAction $action): JsonResponse
     {
         return response()->json([
@@ -31,13 +24,6 @@ class CourseAllocationController extends Controller
         ]);
     }
 
-    /*
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\SuperAdmin\CourseAllocation\StoreCourseAllocationRequest  $request
-     * @param  \App\Actions\SuperAdmin\CourseAllocation\CreateCourseAllocationAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(StoreCourseAllocationRequest $request, CreateCourseAllocationAction $action): JsonResponse
     {
         $allocation = $action->execute($request->validated());
@@ -53,13 +39,6 @@ class CourseAllocationController extends Controller
         ], 201);
     }
 
-    /*
-     * Display the specified resource.
-     *
-     * @param  \App\Models\CourseAllocation  $course_allocation
-     * @param  \App\Actions\SuperAdmin\CourseAllocation\ShowCourseAllocationAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show(CourseAllocation $course_allocation, ShowCourseAllocationAction $action): JsonResponse
     {
         return response()->json([
@@ -68,14 +47,6 @@ class CourseAllocationController extends Controller
         ]);
     }
 
-    /*
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\SuperAdmin\CourseAllocation\UpdateCourseAllocationRequest  $request
-     * @param  \App\Models\CourseAllocation  $course_allocation
-     * @param  \App\Actions\SuperAdmin\CourseAllocation\UpdateCourseAllocationAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(UpdateCourseAllocationRequest $request, CourseAllocation $course_allocation, UpdateCourseAllocationAction $action): JsonResponse
     {
         return response()->json([
@@ -84,13 +55,6 @@ class CourseAllocationController extends Controller
         ]);
     }
 
-    /*
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\CourseAllocation  $course_allocation
-     * @param  \App\Actions\SuperAdmin\CourseAllocation\DeleteCourseAllocationAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function destroy(CourseAllocation $course_allocation, DeleteCourseAllocationAction $action): JsonResponse
     {
         $action->execute($course_allocation);

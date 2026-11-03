@@ -16,13 +16,6 @@ use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
-    /*
-     * Display a listing of the departments.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Actions\SuperAdmin\Department\ListDepartmentsAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function index(Request $request, ListDepartmentsAction $action): JsonResponse
     {
         return response()->json([
@@ -31,11 +24,6 @@ class DepartmentController extends Controller
         ]);
     }
 
-    /*
-    * Store a newly created department in storage.
-    * @param  \App\Http\Requests\SuperAdmin\Department\StoreDepartmentRequest  $request
-    * @param  \App\Actions\SuperAdmin\Department\CreateDepartmentAction  $action
-    */
     public function store(StoreDepartmentRequest $request, CreateDepartmentAction $action): JsonResponse
     {
         $department = $action->execute($request->validated());
@@ -46,14 +34,6 @@ class DepartmentController extends Controller
         ], 201);
     }
 
-
-    /*
-     * Display the specified department.
-     *
-     * @param  \App\Models\Department  $department
-     * @param  \App\Actions\SuperAdmin\Department\ShowDepartmentAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show(Department $department, ShowDepartmentAction $action): JsonResponse
     {
         return response()->json([
@@ -62,15 +42,6 @@ class DepartmentController extends Controller
         ]);
     }
 
-
-    /*
-     * Update the specified department in storage.
-     *
-     * @param  \App\Http\Requests\SuperAdmin\Department\UpdateDepartmentRequest  $request
-     * @param  \App\Models\Department  $department
-     * @param  \App\Actions\SuperAdmin\Department\UpdateDepartmentAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(UpdateDepartmentRequest $request, Department $department, UpdateDepartmentAction $action): JsonResponse
     {
         return response()->json([
@@ -79,14 +50,6 @@ class DepartmentController extends Controller
         ]);
     }
 
-
-/*
-     * Remove the specified department from storage.
-     *
-     * @param  \App\Models\Department  $department
-     * @param  \App\Actions\SuperAdmin\Department\DeleteDepartmentAction  $action
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function destroy(Department $department, DeleteDepartmentAction $action): JsonResponse
     {
         $action->execute($department);

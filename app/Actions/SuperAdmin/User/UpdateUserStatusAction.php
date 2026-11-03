@@ -10,6 +10,11 @@ class UpdateUserStatusAction
     {
         $user->update(['is_active' => $isActive]);
 
+        // Revoke all tokens so a deactivated user is logged out immediately
+        if (!$isActive) {
+            $user->tokens()->delete();
+        }
+
         return $user->fresh();
     }
 }

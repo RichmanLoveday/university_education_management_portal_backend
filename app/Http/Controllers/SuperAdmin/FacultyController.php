@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 
 class FacultyController extends Controller
 {
-
     // List all faculties with optional search and filter
     public function index(Request $request, ListFacultiesAction $action): JsonResponse
     {
