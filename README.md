@@ -31,6 +31,11 @@ php artisan serve             # http://localhost:8000
 | Student (200L) | `student2@uemp.test` | **Not registered yet** — use to demo registration end-to-end |
 | Student (SEN 300L) | `student4@uemp.test` | Other department |
 
+### Bruno collection
+
+Import `docs/uemp-api.bruno.json` in Bruno (**Import Collection → Bruno Collection**), select the **Local**
+environment, then run a login in **00 Auth**. The token is saved automatically for that role's folder.
+
 Login: `POST /api/auth/login` with `{ "email", "password" }` → returns `token` and `user.role`.
 Send `Authorization: Bearer <token>` and `Accept: application/json` on every other request.
 The frontend redirects on `user.role` (`super_admin`, `department_admin`, `lecturer`, `student`).
