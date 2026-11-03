@@ -36,6 +36,36 @@ php artisan serve             # http://localhost:8000
 Import `docs/uemp-api.bruno.json` in Bruno (**Import Collection → Bruno Collection**), select the **Local**
 environment, then run a login in **00 Auth**. The token is saved automatically for that role's folder.
 
+For the live API, switch to the **Production** environment and set `baseUrl` to your Railway URL.
+
+### Deploying to Railway
+
+The repo ships with a `Dockerfile` (PHP 8.3 + Apache) and `railway.json`. On every start the container
+caches config/routes/views, runs `migrate --force`, and seeds the demo data once if the database has no users.
+
+1. Push the repo to GitHub, then in Railway: **New Project → Deploy from GitHub repo**.
+2. In the same project: **New → Database → MySQL**.
+3. On the app service, open **Variables** and add:
+
+   | Variable | Value |
+   |---|---|
+   | `APP_NAME` | `UEMP` |
+   | `APP_ENV` | `production` |
+   | `APP_DEBUG` | `false` |
+   | `APP_KEY` | output of `php artisan key:generate --show` |
+   | `APP_URL` | `https://${{RAILWAY_PUBLIC_DOMAIN}}` |
+   | `DB_CONNECTION` | `mysql` |
+   | `DB_URL` | `${{MySQL.MYSQL_URL}}` |
+   | `LOG_CHANNEL` | `stderr` |
+   | `SESSION_DRIVER` | `database` |
+   | `CACHE_STORE` | `database` |
+
+   Optional: `RUN_MIGRATIONS=false` skips migrations on start, `SEED_IF_EMPTY=false` skips the demo seed.
+4. **Settings → Networking → Generate Domain**. The health check hits `/up`.
+
+To reset the live demo data, run `php artisan migrate:fresh --seed --force` from the service shell
+(`railway ssh` or the dashboard).
+
 Login: `POST /api/auth/login` with `{ "email", "password" }` → returns `token` and `user.role`.
 Send `Authorization: Bearer <token>` and `Accept: application/json` on every other request.
 The frontend redirects on `user.role` (`super_admin`, `department_admin`, `lecturer`, `student`).

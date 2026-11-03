@@ -6278,6 +6278,124 @@
           "secret": false
         }
       ]
+    },
+    {
+      "uid": "OP32kJKNtydQoJFmf1MXO",
+      "name": "Production",
+      "variables": [
+        {
+          "uid": "VvmKj8ZRNUfAymylAtINg",
+          "name": "baseUrl",
+          "value": "https://your-app.up.railway.app",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        },
+        {
+          "uid": "1XDxikOwxYey8mPP98cio",
+          "name": "facultyId",
+          "value": "1",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        },
+        {
+          "uid": "sLA9WnHxRX0o9Ry3wpqTb",
+          "name": "departmentId",
+          "value": "1",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        },
+        {
+          "uid": "yJ8uKCrDwO00yocbfIM3f",
+          "name": "programId",
+          "value": "1",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        },
+        {
+          "uid": "ll1EyiHUHpck11mFyNo1q",
+          "name": "sessionId",
+          "value": "2",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        },
+        {
+          "uid": "nvrxWf8nQgCRiMGCw0O9E",
+          "name": "semesterId",
+          "value": "3",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        },
+        {
+          "uid": "0WplUBXXLE4u5IrgxZBnl",
+          "name": "lecturerId",
+          "value": "2",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        },
+        {
+          "uid": "cGSmVcdtsWwZPtClkdQs3",
+          "name": "userId",
+          "value": "7",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        },
+        {
+          "uid": "LTSFTI4verHLKSUutla70",
+          "name": "resultId",
+          "value": "7",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        },
+        {
+          "uid": "NpsIIlDnIqYuDMQv3iLeA",
+          "name": "csc301AllocationId",
+          "value": "3",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        },
+        {
+          "uid": "FfZylcqRSjMfbaB37HcyZ",
+          "name": "csc302AllocationId",
+          "value": "4",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        },
+        {
+          "uid": "vQpf9NvGOKv1BvwPQbml7",
+          "name": "csc201AllocationId",
+          "value": "6",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        },
+        {
+          "uid": "0VuItAL0wuj0RaFnszrKC",
+          "name": "lecturerAllocationId",
+          "value": "6",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        },
+        {
+          "uid": "eoGOcDuhx2uOYspD0j0WY",
+          "name": "lecturerResultId",
+          "value": "1",
+          "type": "text",
+          "enabled": true,
+          "secret": false
+        }
+      ]
     }
   ],
   "root": {
