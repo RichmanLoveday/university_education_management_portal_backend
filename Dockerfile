@@ -14,7 +14,8 @@ RUN apt-get update \
 
 # Serve from public/ and allow Laravel's .htaccess rewrites
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN a2enmod rewrite headers \
+RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
+    && a2enmod mpm_prefork rewrite headers \
     && sed -ri 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf \
     && echo "ServerName localhost" >> /etc/apache2/apache2.conf
