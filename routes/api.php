@@ -5,6 +5,7 @@ use App\Http\Controllers\SuperAdmin\FacultyController;
 use App\Http\Controllers\SuperAdmin\DepartmentController;
 use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\SuperAdmin\AcademicSessionController;
+use App\Http\Controllers\SuperAdmin\StudentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -35,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('departments', DepartmentController::class);
 
         // Programs
-        // Route::apiResource('programs', \App\Http\Controllers\SuperAdmin\ProgramController::class);
+        Route::apiResource('programs', \App\Http\Controllers\SuperAdmin\ProgramController::class);
 
 
         // Academic Sessions & Semesters
@@ -47,8 +48,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('semesters/{semester}/set-current', [\App\Http\Controllers\SuperAdmin\SemesterController::class, 'setCurrent']);
 
 
-        // Route::apiResource('students', \App\Http\Controllers\SuperAdmin\StudentController::class);
-        // Route::apiResource('lecturers', \App\Http\Controllers\SuperAdmin\LecturerController::class);
+        // Students and lecturer management
+        Route::apiResource('students', StudentController::class);
+        Route::apiResource('lecturers', \App\Http\Controllers\SuperAdmin\LecturerController::class);
+
+        Route::apiResource('course-allocations', \App\Http\Controllers\SuperAdmin\CourseAllocationController::class);
 
         // // Courses
         // Route::apiResource('courses', \App\Http\Controllers\SuperAdmin\CourseController::class);
