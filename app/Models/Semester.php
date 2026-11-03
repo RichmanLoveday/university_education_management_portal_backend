@@ -13,12 +13,14 @@ class Semester extends Model
     protected $fillable = [
         'academic_session_id',
         'name',
+        'number',
         'start_date',
         'end_date',
         'is_current',
     ];
 
     protected $casts = [
+        'number'     => 'integer',
         'start_date' => 'date',
         'end_date'   => 'date',
         'is_current' => 'boolean',

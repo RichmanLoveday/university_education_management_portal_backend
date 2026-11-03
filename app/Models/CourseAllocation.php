@@ -35,4 +35,23 @@ class CourseAllocation extends Model
     {
         return $this->belongsTo(Semester::class);
     }
+
+    // Active registrations for this course in the same session & semester
+    public function registrationsQuery()
+    {
+        return CourseRegistration::query()
+            ->where('course_id', $this->course_id)
+            ->where('academic_session_id', $this->academic_session_id)
+            ->where('semester_id', $this->semester_id)
+            ->where('status', 'registered');
+    }
+
+    // Results that belong to this allocation
+    public function resultsQuery()
+    {
+        return Result::query()->whereHas('courseRegistration', fn($q) => $q
+            ->where('course_id', $this->course_id)
+            ->where('academic_session_id', $this->academic_session_id)
+            ->where('semester_id', $this->semester_id));
+    }
 }

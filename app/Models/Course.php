@@ -42,4 +42,14 @@ class Course extends Model
     {
         return $this->hasMany(CourseRegistration::class);
     }
+
+    // Courses a student can register: own department, level, semester and active
+    public function scopeAvailableFor($query, Student $student, int $semesterNumber)
+    {
+        return $query
+            ->where('department_id', $student->department_id)
+            ->where('level', $student->academic_level)
+            ->where('semester', $semesterNumber)
+            ->where('is_active', true);
+    }
 }
