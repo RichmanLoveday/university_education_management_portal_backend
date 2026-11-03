@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Actions\DepartmentAdmin\Result;
+
+use App\Models\CourseAllocation;
+use App\Models\User;
+use App\Services\Result\ResultApprovalService;
+use Illuminate\Support\Collection;
+
+class ReopenResultsAction
+{
+    public function __construct(
+        private ResultApprovalService $approvalService
+    ) {}
+
+    public function execute(CourseAllocation $allocation, User $user, array $data): Collection
+    {
+        return $this->approvalService->reopen($allocation, $user, $data['reason'], $data['result_ids'] ?? null);
+    }
+}

@@ -2,27 +2,18 @@
 
 namespace App\Models;
 
-
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-// #[Fillable(['name', 'email', 'password', 'role', 'is_active', 'last_login_at'])]
-// #[Hidden(['password', 'remember_token'])]
-
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
-
-     protected $fillable = [
+    protected $fillable = [
         'name',
         'email',
         'password',
@@ -43,9 +34,7 @@ class User extends Authenticatable
         'password'          => 'hashed',
     ];
 
-
-
-      // Relationships
+    // Relationships
     public function student()
     {
         return $this->hasOne(Student::class);
@@ -64,6 +53,22 @@ class User extends Authenticatable
     public function resultAudits()
     {
         return $this->hasMany(ResultAudit::class, 'performed_by');
+    }
+
+    public function departmentAdmin()
+    {
+        return $this->hasOne(DepartmentAdmin::class);
+    }
+
+    // Helper to easily get the department_id of a Department Admin
+    public function getDepartmentIdAttribute()
+    {
+        return $this->departmentAdmin?->department_id;
+    }
+
+    public function getDepartmentId(): ?int
+    {
+        return $this->departmentAdmin?->department_id;
     }
 
     // Helpers

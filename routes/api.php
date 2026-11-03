@@ -1,18 +1,13 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\SuperAdmin\FacultyController;
-use App\Http\Controllers\SuperAdmin\DepartmentController;
-use App\Http\Controllers\SuperAdmin\UserController;
-use App\Http\Controllers\SuperAdmin\AcademicSessionController;
-use App\Http\Controllers\SuperAdmin\StudentController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\DepartmentAdmin;
+use App\Http\Controllers\SuperAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
-
-    // Public routes
-    Route::post('/login', [AuthController::class, 'login']);
+    // Public routes (rate limited against brute force)
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
 
     // Protected routes
     Route::middleware('auth:sanctum')->group(function () {
@@ -22,49 +17,64 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-
-
 Route::middleware('auth:sanctum')->group(function () {
-    // SUPPER ADMIN ROUTES
+    // SUPER ADMIN ROUTES
     Route::middleware('role:super_admin')->prefix('super-admin')->name('super-admin.')->group(function () {
-        // Dashboard
-
         // Faculty Management
-        Route::apiResource('faculties', FacultyController::class);
+        Route::apiResource('faculties', SuperAdmin\FacultyController::class);
 
         // Department Management
-        Route::apiResource('departments', DepartmentController::class);
+        Route::apiResource('departments', SuperAdmin\DepartmentController::class);
 
         // Programs
-        Route::apiResource('programs', \App\Http\Controllers\SuperAdmin\ProgramController::class);
-
+        Route::apiResource('programs', SuperAdmin\ProgramController::class);
 
         // Academic Sessions & Semesters
-        Route::apiResource('academic-sessions', AcademicSessionController::class);
-        Route::post('academic-sessions/{academic_session}/set-current', [AcademicSessionController::class, 'setCurrent']);
+        Route::apiResource('academic-sessions', SuperAdmin\AcademicSessionController::class);
+        Route::post('academic-sessions/{academic_session}/set-current', [SuperAdmin\AcademicSessionController::class, 'setCurrent']);
 
-        // Semesters
-        Route::apiResource('semesters', \App\Http\Controllers\SuperAdmin\SemesterController::class);
-        Route::post('semesters/{semester}/set-current', [\App\Http\Controllers\SuperAdmin\SemesterController::class, 'setCurrent']);
-
+        Route::apiResource('semesters', SuperAdmin\SemesterController::class);
+        Route::post('semesters/{semester}/set-current', [SuperAdmin\SemesterController::class, 'setCurrent']);
 
         // Students and lecturer management
-        Route::apiResource('students', StudentController::class);
-        Route::apiResource('lecturers', \App\Http\Controllers\SuperAdmin\LecturerController::class);
+        Route::apiResource('students', SuperAdmin\StudentController::class);
+        Route::apiResource('lecturers', SuperAdmin\LecturerController::class);
 
-        Route::apiResource('course-allocations', \App\Http\Controllers\SuperAdmin\CourseAllocationController::class);
-
-        // // Courses
-        // Route::apiResource('courses', \App\Http\Controllers\SuperAdmin\CourseController::class);
-
-        // // Reports
-        // Route::get('/reports/overview', [\App\Http\Controllers\SuperAdmin\ReportController::class, 'overview']);
-
+        // Courses & allocations
+        Route::apiResource('courses', SuperAdmin\CourseController::class);
+        Route::apiResource('course-allocations', SuperAdmin\CourseAllocationController::class);
 
         // User Management
-        Route::apiResource('users', UserController::class);
-        Route::patch('users/{user}/status', [UserController::class, 'updateStatus']);
-        Route::patch('users/{user}/role', [UserController::class, 'updateRole']);
+        Route::apiResource('users', SuperAdmin\UserController::class);
+        Route::patch('users/{user}/status', [SuperAdmin\UserController::class, 'updateStatus']);
+        Route::patch('users/{user}/role', [SuperAdmin\UserController::class, 'updateRole']);
+    });
 
+    // DEPARTMENT ADMIN ROUTES (every record is scoped to the admin's department)
+    Route::middleware('role:department_admin')->prefix('department-admin')->name('department-admin.')->group(function () {
+        Route::get('dashboard', [DepartmentAdmin\DashboardController::class, 'index']);
+
+        Route::apiResource('students', DepartmentAdmin\StudentController::class);
+        Route::apiResource('lecturers', DepartmentAdmin\LecturerController::class);
+        Route::apiResource('programs', DepartmentAdmin\ProgramController::class);
+        Route::apiResource('courses', DepartmentAdmin\CourseController::class);
+        Route::apiResource('course-allocations', DepartmentAdmin\CourseAllocationController::class);
+        Route::get('course-registrations', [DepartmentAdmin\CourseRegistrationController::class, 'index']);
+
+        // Result review & approval
+        Route::prefix('results')->group(function () {
+            Route::get('submissions', [DepartmentAdmin\ResultController::class, 'submissions']);
+            Route::get('courses/{course_allocation}', [DepartmentAdmin\ResultController::class, 'course']);
+            Route::post('courses/{course_allocation}/approve', [DepartmentAdmin\ResultController::class, 'approve']);
+            Route::post('courses/{course_allocation}/reject', [DepartmentAdmin\ResultController::class, 'reject']);
+            Route::post('courses/{course_allocation}/reopen', [DepartmentAdmin\ResultController::class, 'reopen']);
+            Route::get('{result}', [DepartmentAdmin\ResultController::class, 'show']);
+        });
+
+        Route::prefix('reports')->group(function () {
+            Route::get('students', [DepartmentAdmin\ReportController::class, 'students']);
+            Route::get('course-registrations', [DepartmentAdmin\ReportController::class, 'courseRegistrations']);
+            Route::get('academic-performance', [DepartmentAdmin\ReportController::class, 'academicPerformance']);
+        });
     });
 });

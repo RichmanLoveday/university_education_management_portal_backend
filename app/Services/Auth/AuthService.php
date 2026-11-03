@@ -8,9 +8,6 @@ use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
-    /**
-     * Login user and return token + user data
-     */
     public function login(array $credentials): array
     {
         $user = User::where('email', $credentials['email'])->first();
@@ -39,33 +36,21 @@ class AuthService
         ];
     }
 
-    /**
-     * Get authenticated user with profile
-     */
     public function me(User $user): array
     {
         return $this->formatUser($user);
     }
 
-    /**
-     * Logout (revoke current token)
-     */
     public function logout(User $user): void
     {
         $user->currentAccessToken()->delete();
     }
 
-    /**
-     * Logout from all devices
-     */
     public function logoutAll(User $user): void
     {
         $user->tokens()->delete();
     }
 
-    /**
-     * Format user response with role-based profile
-     */
     private function formatUser(User $user): array
     {
         $data = [
@@ -104,9 +89,13 @@ class AuthService
         }
 
         if ($user->isDepartmentAdmin()) {
-            // You can later attach department_id if you store it
+            $departmentAdmin = $user->departmentAdmin()->with('department.faculty')->first();
+
             $data['profile'] = [
-                'role_label' => 'Department Administrator',
+                'role_label'    => 'Department Administrator',
+                'department'    => $departmentAdmin?->department?->name,
+                'department_id' => $departmentAdmin?->department_id,
+                'faculty'       => $departmentAdmin?->department?->faculty?->name,
             ];
         }
 
