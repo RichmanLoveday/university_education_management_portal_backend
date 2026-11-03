@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DepartmentAdmin;
+use App\Http\Controllers\Lecturer;
 use App\Http\Controllers\SuperAdmin;
 use Illuminate\Support\Facades\Route;
 
@@ -76,5 +77,19 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('course-registrations', [DepartmentAdmin\ReportController::class, 'courseRegistrations']);
             Route::get('academic-performance', [DepartmentAdmin\ReportController::class, 'academicPerformance']);
         });
+    });
+
+    // LECTURER ROUTES (only courses allocated to the lecturer)
+    Route::middleware('role:lecturer')->prefix('lecturer')->name('lecturer.')->group(function () {
+        Route::get('dashboard', [Lecturer\DashboardController::class, 'index']);
+
+        Route::get('courses', [Lecturer\CourseController::class, 'index']);
+        Route::get('courses/{course_allocation}', [Lecturer\CourseController::class, 'show']);
+        Route::get('courses/{course_allocation}/summary', [Lecturer\CourseController::class, 'summary']);
+
+        Route::get('courses/{course_allocation}/results', [Lecturer\ResultController::class, 'index']);
+        Route::post('courses/{course_allocation}/results', [Lecturer\ResultController::class, 'store']);
+        Route::post('courses/{course_allocation}/results/submit', [Lecturer\ResultController::class, 'submit']);
+        Route::get('results/{result}', [Lecturer\ResultController::class, 'show']);
     });
 });
