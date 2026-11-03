@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DepartmentAdmin;
 use App\Http\Controllers\Lecturer;
+use App\Http\Controllers\Student;
 use App\Http\Controllers\SuperAdmin;
 use Illuminate\Support\Facades\Route;
 
@@ -91,5 +92,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('courses/{course_allocation}/results', [Lecturer\ResultController::class, 'store']);
         Route::post('courses/{course_allocation}/results/submit', [Lecturer\ResultController::class, 'submit']);
         Route::get('results/{result}', [Lecturer\ResultController::class, 'show']);
+    });
+
+    // STUDENT ROUTES (always resolved from the authenticated student)
+    Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
+        Route::get('dashboard', [Student\DashboardController::class, 'index']);
+
+        Route::get('profile', [Student\ProfileController::class, 'show']);
+        Route::patch('profile', [Student\ProfileController::class, 'update']);
+
+        Route::get('courses/available', [Student\CourseRegistrationController::class, 'available']);
+        Route::get('course-registrations', [Student\CourseRegistrationController::class, 'index']);
+        Route::post('course-registrations', [Student\CourseRegistrationController::class, 'store']);
+        Route::get('course-registrations/slip', [Student\CourseRegistrationController::class, 'slip']);
+        Route::delete('course-registrations/{course_registration}', [Student\CourseRegistrationController::class, 'destroy']);
+
+        Route::get('results', [Student\ResultController::class, 'index']);
+        Route::get('results/statement', [Student\ResultController::class, 'statement']);
     });
 });
