@@ -20,16 +20,16 @@ php artisan serve             # http://localhost:8000
 
 ### Test credentials (password for every account: `password`)
 
-| Role | Email | Notes |
-|---|---|---|
-| Super Admin | `superadmin@uemp.test` | University-wide access |
-| Department Admin (Computer Science) | `deptadmin.cs@uemp.test` | Has 2 pending CSC 302 results to approve |
-| Department Admin (Software Eng.) | `deptadmin.sen@uemp.test` | Used to show department isolation |
-| Lecturer | `lecturer1@uemp.test` | CSC 301 (approved), CSC 302 (submitted) |
-| Lecturer | `lecturer2@uemp.test` | CSC 201 / CSC 305 (current semester) |
-| Student (300L) | `student1@uemp.test` | Has 2 semesters of approved results + CGPA |
-| Student (200L) | `student2@uemp.test` | **Not registered yet** — use to demo registration end-to-end |
-| Student (SEN 300L) | `student4@uemp.test` | Other department |
+| Role                                | Email                     | Notes                                                        |
+| ----------------------------------- | ------------------------- | ------------------------------------------------------------ |
+| Super Admin                         | `superadmin@uemp.test`    | University-wide access                                       |
+| Department Admin (Computer Science) | `deptadmin.cs@uemp.test`  | Has 2 pending CSC 302 results to approve                     |
+| Department Admin (Software Eng.)    | `deptadmin.sen@uemp.test` | Used to show department isolation                            |
+| Lecturer                            | `lecturer1@uemp.test`     | CSC 301 (approved), CSC 302 (submitted)                      |
+| Lecturer                            | `lecturer2@uemp.test`     | CSC 201 / CSC 305 (current semester)                         |
+| Student (300L)                      | `student1@uemp.test`      | Has 2 semesters of approved results + CGPA                   |
+| Student (200L)                      | `student2@uemp.test`      | **Not registered yet** — use to demo registration end-to-end |
+| Student (SEN 300L)                  | `student4@uemp.test`      | Other department                                             |
 
 ### Bruno collection
 
@@ -47,20 +47,21 @@ caches config/routes/views, runs `migrate --force`, and seeds the demo data once
 2. In the same project: **New → Database → MySQL**.
 3. On the app service, open **Variables** and add:
 
-   | Variable | Value |
-   |---|---|
-   | `APP_NAME` | `UEMP` |
-   | `APP_ENV` | `production` |
-   | `APP_DEBUG` | `false` |
-   | `APP_KEY` | output of `php artisan key:generate --show` |
-   | `APP_URL` | `https://${{RAILWAY_PUBLIC_DOMAIN}}` |
-   | `DB_CONNECTION` | `mysql` |
-   | `DB_URL` | `${{MySQL.MYSQL_URL}}` |
-   | `LOG_CHANNEL` | `stderr` |
-   | `SESSION_DRIVER` | `database` |
-   | `CACHE_STORE` | `database` |
+    | Variable         | Value                                       |
+    | ---------------- | ------------------------------------------- |
+    | `APP_NAME`       | `UEMP`                                      |
+    | `APP_ENV`        | `production`                                |
+    | `APP_DEBUG`      | `false`                                     |
+    | `APP_KEY`        | output of `php artisan key:generate --show` |
+    | `APP_URL`        | `https://${{RAILWAY_PUBLIC_DOMAIN}}`        |
+    | `DB_CONNECTION`  | `mysql`                                     |
+    | `DB_URL`         | `${{MySQL.MYSQL_URL}}`                      |
+    | `LOG_CHANNEL`    | `stderr`                                    |
+    | `SESSION_DRIVER` | `database`                                  |
+    | `CACHE_STORE`    | `database`                                  |
 
-   Optional: `RUN_MIGRATIONS=false` skips migrations on start, `SEED_IF_EMPTY=false` skips the demo seed.
+    Optional: `RUN_MIGRATIONS=false` skips migrations on start, `SEED_IF_EMPTY=false` skips the demo seed.
+
 4. **Settings → Networking → Generate Domain**, then redeploy so `APP_URL` picks it up. The health check hits `/up`.
    If `APP_URL` has no valid host, the container falls back to the Railway domain (or `http://localhost`)
    instead of crashing.
@@ -81,27 +82,27 @@ Route (role middleware) → Controller → FormRequest (validation + ownership) 
                                                                        ↘ Service (shared domain logic)
 ```
 
-| Layer | Location | Responsibility |
-|---|---|---|
-| Routes | `routes/api.php` | One prefix per role: `super-admin`, `department-admin`, `lecturer`, `student` |
-| Middleware | `app/Http/Middleware/EnsureUserHasRole.php` | Rejects wrong role and **deactivated** accounts (even with a valid token) |
-| Controllers | `app/Http/Controllers/{Role}` | Thin: resolve the actor, guard ownership, return `{ message, data }` |
-| Base controllers | `DepartmentAdminController`, `BaseLecturerController`, `BaseStudentController` | Resolve the actor's department / lecturer / student profile and abort `403` on foreign records |
-| Form Requests | `app/Http/Requests/{Role}` | Input validation; scoped `exists` rules (e.g. program must belong to *your* department); `authorize()` ownership checks |
-| Actions | `app/Actions/{Role}/{Module}` | One use case per class (`CreateStudentAction`, `SubmitResultsAction`, …) |
-| Services | `app/Services` | Logic shared across roles (see below) |
+| Layer            | Location                                                                       | Responsibility                                                                                                          |
+| ---------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| Routes           | `routes/api.php`                                                               | One prefix per role: `super-admin`, `department-admin`, `lecturer`, `student`                                           |
+| Middleware       | `app/Http/Middleware/EnsureUserHasRole.php`                                    | Rejects wrong role and **deactivated** accounts (even with a valid token)                                               |
+| Controllers      | `app/Http/Controllers/{Role}`                                                  | Thin: resolve the actor, guard ownership, return `{ message, data }`                                                    |
+| Base controllers | `DepartmentAdminController`, `BaseLecturerController`, `BaseStudentController` | Resolve the actor's department / lecturer / student profile and abort `403` on foreign records                          |
+| Form Requests    | `app/Http/Requests/{Role}`                                                     | Input validation; scoped `exists` rules (e.g. program must belong to _your_ department); `authorize()` ownership checks |
+| Actions          | `app/Actions/{Role}/{Module}`                                                  | One use case per class (`CreateStudentAction`, `SubmitResultsAction`, …)                                                |
+| Services         | `app/Services`                                                                 | Logic shared across roles (see below)                                                                                   |
 
 **Services**
 
-| Service | Purpose |
-|---|---|
-| `Auth/AuthService` | Login, token issue/revoke, role-based profile |
-| `Academic/AcademicPeriodService` | Resolves the current session & semester |
-| `Result/GradingService` | Total score → grade & grade point from the configurable grading scale |
-| `Result/GpaService` | Credit-unit-weighted GPA per semester, CGPA, class of degree |
-| `Result/ResultApprovalService` | Approve / reject / reopen state transitions (transactional, audited) |
-| `Result/ResultAuditService` | Writes the audit trail (old/new values, actor, comment) |
-| `Report/ReportService` | Student, registration and academic-performance reports (department-scoped or university-wide) |
+| Service                          | Purpose                                                                                       |
+| -------------------------------- | --------------------------------------------------------------------------------------------- |
+| `Auth/AuthService`               | Login, token issue/revoke, role-based profile                                                 |
+| `Academic/AcademicPeriodService` | Resolves the current session & semester                                                       |
+| `Result/GradingService`          | Total score → grade & grade point from the configurable grading scale                         |
+| `Result/GpaService`              | Credit-unit-weighted GPA per semester, CGPA, class of degree                                  |
+| `Result/ResultApprovalService`   | Approve / reject / reopen state transitions (transactional, audited)                          |
+| `Result/ResultAuditService`      | Writes the audit trail (old/new values, actor, comment)                                       |
+| `Report/ReportService`           | Student, registration and academic-performance reports (department-scoped or university-wide) |
 
 Configuration lives in `config/uemp.php` (CA/exam maximums, unit limits, fallback grading scale).
 
@@ -122,7 +123,7 @@ results 1─* result_audits (action, performed_by, old_values, new_values, comme
 grading_scales (min_score, max_score, grade, grade_point)
 ```
 
-Full diagram: open `docs/uemp-erd.drawio` in [diagrams.net](https://app.diagrams.net) (**File → Open from → Device**).
+Full diagram: open `docs/uemp-erd.drawio` in [diagrams.net](https://drive.google.com/file/d/18bIW6WFm4o6p1naasyouy0hDgleAd4nz/view?usp=sharing) (**File → Open from → Device**).
 
 - `users.role` ∈ `student | lecturer | department_admin | super_admin`; role profiles are 1-to-1 tables.
 - `semesters.number` (1/2) links a semester to `courses.semester`, so the system knows what is offered.
@@ -133,17 +134,17 @@ Full diagram: open `docs/uemp-erd.drawio` in [diagrams.net](https://app.diagrams
 
 ## 4. Role-based access control
 
-| Capability | Student | Lecturer | Dept Admin | Super Admin |
-|---|:-:|:-:|:-:|:-:|
-| Own dashboard & profile | ✔ | ✔ | ✔ | ✔ |
-| Register / drop own courses | ✔ | | | |
-| View own **approved** results, GPA, CGPA, statement | ✔ | | | |
-| View class lists of **assigned** courses | | ✔ | ✔ (dept) | ✔ |
-| Enter CA/exam, save draft, submit | | ✔ (assigned only) | | |
-| Approve / reject / reopen results | | | ✔ (own dept) | view |
-| Manage students, lecturers, programs, courses, allocations | | | ✔ (own dept) | ✔ |
-| Faculties, departments, sessions, semesters, users, roles, grading scale | | | | ✔ |
-| Audit logs & university-wide reports | | | dept reports | ✔ |
+| Capability                                                               | Student |     Lecturer      |  Dept Admin  | Super Admin |
+| ------------------------------------------------------------------------ | :-----: | :---------------: | :----------: | :---------: |
+| Own dashboard & profile                                                  |    ✔    |         ✔         |      ✔       |      ✔      |
+| Register / drop own courses                                              |    ✔    |                   |              |             |
+| View own **approved** results, GPA, CGPA, statement                      |    ✔    |                   |              |             |
+| View class lists of **assigned** courses                                 |         |         ✔         |   ✔ (dept)   |      ✔      |
+| Enter CA/exam, save draft, submit                                        |         | ✔ (assigned only) |              |             |
+| Approve / reject / reopen results                                        |         |                   | ✔ (own dept) |    view     |
+| Manage students, lecturers, programs, courses, allocations               |         |                   | ✔ (own dept) |      ✔      |
+| Faculties, departments, sessions, semesters, users, roles, grading scale |         |                   |              |      ✔      |
+| Audit logs & university-wide reports                                     |         |                   | dept reports |      ✔      |
 
 How restrictions are enforced (server side, never trusting the client):
 
@@ -160,6 +161,7 @@ How restrictions are enforced (server side, never trusting the client):
 ## 5. Business workflows
 
 **Course registration** (`/api/student`)
+
 1. `GET courses/available` — department + level + current semester + active courses only.
 2. `POST course-registrations { course_ids: [] }` — validated for eligibility, duplicates and the
    per-semester unit limit (`UEMP_MAX_REGISTRATION_UNITS`, default 24). Only `active` students.
@@ -185,9 +187,9 @@ How restrictions are enforced (server side, never trusting the client):
 
 **GPA** = Σ(units × grade point) / Σ(units), approved results only. Default 5-point scale:
 
-| Score | 70–100 | 60–69 | 50–59 | 45–49 | 40–44 | 0–39 |
-|---|---|---|---|---|---|---|
-| Grade / Point | A / 5 | B / 4 | C / 3 | D / 2 | E / 1 | F / 0 |
+| Score         | 70–100 | 60–69 | 50–59 | 45–49 | 40–44 | 0–39  |
+| ------------- | ------ | ----- | ----- | ----- | ----- | ----- |
+| Grade / Point | A / 5  | B / 4 | C / 3 | D / 2 | E / 1 | F / 0 |
 
 The Super Admin can change it via `/api/super-admin/grading-scales` (overlapping bands are rejected).
 Class of degree: ≥4.50 First, ≥3.50 2:1, ≥2.40 2:2, ≥1.50 Third, ≥1.00 Pass.
@@ -203,6 +205,7 @@ List endpoints are paginated (`?per_page=`) and accept filters such as `search`,
 **Auth** — `POST auth/login`, `GET auth/me`, `POST auth/logout`, `POST auth/logout-all`
 
 **Super Admin** — prefix `/api/super-admin`
+
 - `GET dashboard`
 - CRUD: `faculties`, `departments`, `department-admins`, `programs`, `academic-sessions`, `semesters`,
   `students`, `lecturers`, `courses`, `course-allocations`, `grading-scales`, `users`
@@ -212,6 +215,7 @@ List endpoints are paginated (`?per_page=`) and accept filters such as `search`,
 - `GET reports/students`, `GET reports/course-registrations`, `GET reports/academic-performance`
 
 **Department Admin** — prefix `/api/department-admin`
+
 - `GET dashboard`
 - CRUD: `students`, `lecturers`, `programs`, `courses`, `course-allocations`
 - `GET course-registrations`
@@ -220,13 +224,14 @@ List endpoints are paginated (`?per_page=`) and accept filters such as `search`,
 - `GET reports/students`, `GET reports/course-registrations`, `GET reports/academic-performance`
 
 **Lecturer** — prefix `/api/lecturer`
+
 - `GET dashboard`, `GET courses` (`?current=1`), `GET courses/{allocation}` (class list),
   `GET courses/{allocation}/summary`
 - `GET|POST courses/{allocation}/results`, `POST courses/{allocation}/results/submit`, `GET results/{id}`
 
 **Student** — prefix `/api/student`
+
 - `GET dashboard`, `GET|PATCH profile` (name, password with `current_password`)
 - `GET courses/available`, `GET|POST course-registrations`, `DELETE course-registrations/{id}`,
   `GET course-registrations/slip`
 - `GET results`, `GET results/statement`
-

@@ -71,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('users/{user}/role', [SuperAdmin\UserController::class, 'updateRole']);
     });
 
+
     // DEPARTMENT ADMIN ROUTES (every record is scoped to the admin's department)
     Route::middleware('role:department_admin')->prefix('department-admin')->name('department-admin.')->group(function () {
         Route::get('dashboard', [DepartmentAdmin\DashboardController::class, 'index']);
