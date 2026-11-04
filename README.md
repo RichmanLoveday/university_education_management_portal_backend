@@ -122,6 +122,8 @@ results 1─* result_audits (action, performed_by, old_values, new_values, comme
 grading_scales (min_score, max_score, grade, grade_point)
 ```
 
+Full diagram: open `docs/uemp-erd.drawio` in [diagrams.net](https://app.diagrams.net) (**File → Open from → Device**).
+
 - `users.role` ∈ `student | lecturer | department_admin | super_admin`; role profiles are 1-to-1 tables.
 - `semesters.number` (1/2) links a semester to `courses.semester`, so the system knows what is offered.
 - Unique indexes enforce no duplicate registration and one lecturer allocation per course per semester.
